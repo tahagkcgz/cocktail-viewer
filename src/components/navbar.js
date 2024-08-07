@@ -1,37 +1,58 @@
 'use client';
 
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+    const router = useRouter();
+    const handleRoute = (route) => {
+        router.push(route);
+    };
+
     useEffect(() => {
-        setIsLoggedIn(JSON.parse(localStorage.getItem("loggedIn")));
+        const checkLoginStatus = () => {
+            setIsLoggedIn(JSON.parse(localStorage.getItem("loggedIn")));
+        };
+
+        checkLoginStatus();
+
+        const handleStorageChange = (event) => {
+            if (event.key === "loggedIn") {
+                checkLoginStatus();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     }, []);
 
     return (
         <nav>
             <ul className="flex space-x-4">
                 <li>
-                    <Link href="/">Home</Link>
+                    <div className="cursor-pointer" onClick={() => handleRoute("/")}>Home</div>
                 </li>
                 <li>
-                    <Link href={isLoggedIn ? "/search" : "/login"}>Search</Link>
+                    <div className="cursor-pointer" onClick={() => handleRoute("/search")}>Search</div>
                 </li>
                 <li>
-                    <Link href={isLoggedIn ? "/saved" : "/login"}>Saved Cocktails</Link>
+                    <div className="cursor-pointer" onClick={() => handleRoute("/saved")}>Saved Cocktails</div>
                 </li>
                 <li>
                     {isLoggedIn ? (
-                        <Link href="/logout">Logout</Link>
+                        <div className="cursor-pointer" onClick={() => handleRoute("/logout")}>Logout</div>
                     ) : (
-                        <Link href="/login">Login</Link>
+                        <div className="cursor-pointer" onClick={() => handleRoute("/login")}>Login</div>
                     )}
                 </li>
             </ul>
         </nav>
-    )
+    );
 }
 
 export default Navbar;

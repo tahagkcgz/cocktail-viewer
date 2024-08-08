@@ -1,4 +1,3 @@
-// src/app/logout/page.js
 'use client';
 
 import { useEffect } from "react";
